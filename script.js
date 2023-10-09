@@ -1,5 +1,35 @@
 
 
+ /*
+
+RELATIVIDADE
+
+Antes considerávamos que a distância e o tempo entre os corpos eram os
+mesmos, que somente a velocidade dos 2 corpos variava. Fazer dessa forma
+acarreta em alguns problemas como a imprecisão da colisão dos corpos
+conforme a distância entre eles diminui e o salto na sua posição aumenta.
+Então mudamos a forma como representamos o universo fazendo com que
+agora a distância e a velocidade entre os corpos sejam as mesmas, mas o
+tempo não. Dessa forma,, assumimos que o tempo passa diferente para cada
+corpo a depender de sua massa. Então não temos aceleração na velocidade,
+mas sim no tempo, em outras palavras dilatação do tempo.
+
+------------------------------------------------------------------------
+
+FORÇA GRAVITACIONAL ENTRE OS CORPOS
+  
+-> O corpo 1 sempre andará para esquerda (Left positivo);
+-> O corpo 2 sempre andará para direita (Left negativo);
+
+OBS: Não estamos considerando matéria escura;
+
+Para que ambos sejam sempre verdade, independetes da massa, o corpo 1
+sempre deverá estar à esquerda do corpo 2. Em outras palavras, a função
+forca_gravitacional deverá sempre chamar o Corpo_1 com o Objeto a
+esquerda do Corpo_2.
+
+*/
+
 
 gravidade();
 
@@ -19,19 +49,6 @@ function gravidade() {
 
 
 function forca_gravitacional(Corpo_1, Corpo_2, Tempo_dilatacao, Tempo_aceleracao) {
-
-  /*
-  
-  -> O corpo 1 sempre andará para esquerda (Left positivo);
-  -> O corpo 2 sempre andará para direita (Left negativo);
-
-  OBS: Não estamos considerando matéria escura;
-  
-  Para que ambos sejam sempre verdade, independetes da massa, o corpo 1
-  sempre deverá estar à esquerda do corpo 2. Em outras palavras, essa
-  função deverá sempre chamar o Corpo_1 com o Objeto a esquerda do Corpo_2.
-  
-  */
 
   // Diferença do raio dos corpos
   let Corpo_1_raio = Corpo_1.offsetWidth / 2;
