@@ -1,39 +1,24 @@
 
-// Corpos
-const Corpo_1 = document.querySelector('#M1');
-const Corpo_2 = document.querySelector('#M3');
 
-// Calculo temporal
-let Tempo_aceleracao = 1;
-let Tempo_dilatacao  = 100; // Milisegundos
-
-let colisao = false;
 
 gravidade();
 
 function gravidade() {
     
-  colisao = forca_gravitacional(Corpo_1, Corpo_2);
-
+  // Corpos
+  const Corpo_1 = document.querySelector('#M1');
+  const Corpo_2 = document.querySelector('#M3');
   
-  Tempo_aceleracao *= 1.01;
-  Tempo_dilatacao -= Tempo_aceleracao;
-  
-  console.log(Tempo_dilatacao)
+  // Calculo temporal
+  let Tempo_aceleracao = 1;
+  let Tempo_dilatacao  = 100; // Milisegundos
 
-  if (Tempo_dilatacao > 1 || colisao !== true) {
-    setTimeout(gravidade, Tempo_dilatacao);
-  }
+  Tempo_dilatacao, Tempo_aceleracao = forca_gravitacional(Corpo_1, Corpo_2, Tempo_dilatacao, Tempo_aceleracao);
   
 }
 
 
-
-
-
-
-
-function forca_gravitacional(Corpo_1, Corpo_2) {
+function forca_gravitacional(Corpo_1, Corpo_2, Tempo_dilatacao, Tempo_aceleracao) {
 
   /*
   
@@ -79,7 +64,16 @@ function forca_gravitacional(Corpo_1, Corpo_2) {
   if (
     Corpo_1.offsetLeft + Corpo_1.offsetWidth < Corpo_2_X &&
     Corpo_2.offsetLeft + Corpo_2.offsetWidth > Corpo_1_X
-  )    { return false; }
-  else { return true;  }
+  ) {
+    // Aceleração temporal
+    Tempo_aceleracao *= 1.01;
+    Tempo_dilatacao -= Tempo_aceleracao;
+    
+    setTimeout(() => {
+      forca_gravitacional(Corpo_1, Corpo_2, Tempo_dilatacao, Tempo_aceleracao)
+    }, Tempo_dilatacao);
+  }
+  
+  return Tempo_dilatacao, Tempo_aceleracao;
   
 }
