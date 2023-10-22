@@ -33,61 +33,88 @@ esquerda do Corpo_2.
 */
 
 // Variáveis universais
-const G = 0.0001;
+const G = 0.001;
 
-let Tempo;
-let distancia;
-let forca_gravitacional;
+
+
+
 
 // Corpos
-const Corpo_1 = document.querySelector('#M1');
-const Corpo_2 = document.querySelector('#M3');
+const Corpos = document.querySelectorAll('.corpo');
 
 
-detecta_colisao(Corpo_1, Corpo_2);
-calcula_distancia(Corpo_1, Corpo_2);
-calcula_forca_gravitacional(Corpo_1, Corpo_2);
+// Tempo dos corpos
+let tempo = [];
+Corpos.forEach((e) => tempo.push(e.id));
 
 
-gravidade(Corpo_1, 1000,  1, distancia);
-gravidade(Corpo_2, 1000, -1, distancia);
-
-
-
-
-function gravidade(Corpo, Corpo_tempo_dilatacao, Corpo_sentido, distancia) {
-
-  // Coordendas do corpo
-  let Corpo_X = corpo_coordenadas(Corpo);
-
-  // Movimento do corpo
-  corpo_movimento(Corpo, Corpo_X, Corpo_sentido);
-
-  // Massa do corpo
-  let massa = Corpo.getAttribute('massa');
-  console.log(massa / forca_gravitacional);
-  // Aceleração do movimento do corpo (Relatividade)
-  Corpo_tempo_dilatacao = massa / forca_gravitacional;
-  if (Corpo_tempo_dilatacao < 0) { Corpo_tempo_dilatacaoa = 10; }
-  
-  // Continuidade do movimento do corpo
-  Tempo = setTimeout(() => {
-    Corpo_tempo = gravidade(Corpo, Corpo_tempo_dilatacao, Corpo_sentido, distancia);
-  }, Corpo_tempo_dilatacao);
+for (let i = 0; i < Corpos.length; i++) {
+  for (let j = 0; j < Corpos.length; j++) {
+    if (i != j) {
       
+      forca_gravitacional(Corpos[i], Corpos[j], 1000);
+      
+    }
+  }
 }
 
+
+
+function forca_gravitacional(Corpo_1, Corpo_2, Corpo_1_tempo_dilatacao) {
+
+  // Distância entre os corpos
+  let distancia = calcula_distancia(Corpo_1, Corpo_2);
+  
+  // Sentido dos corpos
+  let Corpo_1_sentido = calcula_sentido(Corpo_1, Corpo_2);
+  console.log(Corpo_1_sentido)
+  // Força gravitacional dos corpos
+  let forca = calcula_forca_gravitacional(Corpo_1, Corpo_2);
+
+  // Coordendas do corpo
+  let Corpo_1_X = corpo_coordenadas(Corpo_1);
+
+  // Movimento do corpo
+  corpo_movimento(Corpo_1, Corpo_1_X, Corpo_1_sentido);
+
+  // Massa do corpo
+  let massa = Corpo_1.getAttribute('massa');
+  
+  // Aceleração do movimento do corpo (Relatividade)
+  Corpo_1_tempo_dilatacao = massa / forca;
+  if (Corpo_1_tempo_dilatacao < 0) { Corpo_1_tempo_dilatacao = 10; }
+  
+  // Continuidade do movimento do corpo
+  setTimeout(() => {
+    forca_gravitacional(Corpo_1, Corpo_2, Corpo_1_tempo_dilatacao);
+  }, Corpo_1_tempo_dilatacao);
+      
+}
 
 function calcula_forca_gravitacional(Corpo_1, Corpo_2) {
 
   // Força gravitacional entre os corpos
-  forca_gravitacional = G * ((Corpo_1.getAttribute('massa') * Corpo_2.getAttribute('massa')) / distancia);
-  
-  // Loop
-  setTimeout(() => {
-      calcula_forca_gravitacional(Corpo_1, Corpo_2);
-  }, 2);
-  
+  return G * ((Corpo_1.getAttribute('massa') * Corpo_2.getAttribute('massa')) / distancia);
+
+}
+
+function calcula_sentido(Corpo_1, Corpo_2) {
+
+  let Corpo_1_X = corpo_coordenadas(Corpo_1);
+  let Corpo_2_X = corpo_coordenadas(Corpo_2);
+
+  if      (Corpo_1_X < Corpo_2_X) {
+    Corpo_1_sentido =  1;
+  }
+  else if (Corpo_1_X == Corpo_2_X) { // Colisão
+    Corpo_1_sentido = 0;
+  }
+  else if (Corpo_1_X > Corpo_2_X) {
+    Corpo_1_sentido = -1;
+  }
+
+  return Corpo_1_sentido;
+
 }
 
 function calcula_distancia(Corpo_1, Corpo_2) {
@@ -96,28 +123,8 @@ function calcula_distancia(Corpo_1, Corpo_2) {
   distancia = corpo_coordenadas(Corpo_1) - corpo_coordenadas(Corpo_2);
   distancia = distancia ** 2;
 
-  // Loop
-  setTimeout(() => {
-    calcula_distancia(Corpo_1, Corpo_2);
-  }, 1);
+  return distancia;
   
-}
-
-function detecta_colisao(Corpo_1, Corpo_2) {
-
-  // Verifica a colisão
-  if (
-    Corpo_1.offsetLeft + Corpo_1.offsetWidth > Corpo_2.offsetLeft &&
-    Corpo_2.offsetLeft + Corpo_2.offsetWidth > Corpo_1.offsetLeft
-  ) {
-    clearTimeout(Tempo);
-  }
-
-  // Loop
-  setTimeout(() => {
-    detecta_colisao(Corpo_1, Corpo_2);
-  }, 1);
-
 }
 
 function corpo_movimento(Corpo, Corpo_X, sentido_X) {
