@@ -32,21 +32,13 @@ esquerda do Corpo_2.
 
 */
 
+
+
 // Variáveis universais
-const G = 0.001;
-
-
-
-
+const G = 0.01;
 
 // Corpos
 const Corpos = document.querySelectorAll('.corpo');
-
-
-// Tempo dos corpos
-let tempo = [];
-Corpos.forEach((e) => tempo.push(e.id));
-
 
 for (let i = 0; i < Corpos.length; i++) {
   for (let j = 0; j < Corpos.length; j++) {
@@ -67,15 +59,15 @@ function forca_gravitacional(Corpo_1, Corpo_2, Corpo_1_tempo_dilatacao) {
   
   // Sentido dos corpos
   let Corpo_1_sentido = calcula_sentido(Corpo_1, Corpo_2);
-  console.log(Corpo_1_sentido)
+
   // Força gravitacional dos corpos
-  let forca = calcula_forca_gravitacional(Corpo_1, Corpo_2);
+  let forca = calcula_forca_gravitacional(Corpo_1, Corpo_2, distancia);
 
   // Coordendas do corpo
-  let Corpo_1_X = corpo_coordenadas(Corpo_1);
+  let Corpo_1_coordenadas = corpo_coordenadas(Corpo_1);
 
   // Movimento do corpo
-  corpo_movimento(Corpo_1, Corpo_1_X, Corpo_1_sentido);
+  corpo_movimento(Corpo_1, Corpo_1_coordenadas, Corpo_1_sentido);
 
   // Massa do corpo
   let massa = Corpo_1.getAttribute('massa');
@@ -91,26 +83,40 @@ function forca_gravitacional(Corpo_1, Corpo_2, Corpo_1_tempo_dilatacao) {
       
 }
 
-function calcula_forca_gravitacional(Corpo_1, Corpo_2) {
-
+function calcula_forca_gravitacional(Corpo_1, Corpo_2, distancia) {
+  
   // Força gravitacional entre os corpos
-  return G * ((Corpo_1.getAttribute('massa') * Corpo_2.getAttribute('massa')) / distancia);
+  return G * ((Corpo_1.getAttribute('massa') * Corpo_2.getAttribute('massa')) / (distancia ** 2));
 
 }
 
 function calcula_sentido(Corpo_1, Corpo_2) {
 
-  let Corpo_1_X = corpo_coordenadas(Corpo_1);
-  let Corpo_2_X = corpo_coordenadas(Corpo_2);
+  let Corpo_1_sentido = [];
 
-  if      (Corpo_1_X < Corpo_2_X) {
-    Corpo_1_sentido =  1;
+  let Corpo_1_coordenada = corpo_coordenadas(Corpo_1);
+  let Corpo_2_coordenada = corpo_coordenadas(Corpo_2);
+  
+  // X
+  if (Corpo_1_coordenada[0] < Corpo_2_coordenada[0]) {
+    Corpo_1_sentido[0] =  1;
   }
-  else if (Corpo_1_X == Corpo_2_X) { // Colisão
-    Corpo_1_sentido = 0;
+  else if (Corpo_1_coordenada[0] == Corpo_2_coordenada[0]) { // Colisão no eixo
+    Corpo_1_sentido[0] = 0;
   }
-  else if (Corpo_1_X > Corpo_2_X) {
-    Corpo_1_sentido = -1;
+  else {
+    Corpo_1_sentido[0] = -1;
+  }
+
+  // Y
+  if (Corpo_1_coordenada[1] < Corpo_2_coordenada[1]) {
+    Corpo_1_sentido[1] =  1;
+  }
+  else if (Corpo_1_coordenada[1] == Corpo_2_coordenada[1]) { // Colisão no eixo
+    Corpo_1_sentido[1] = 0;
+  }
+  else {
+    Corpo_1_sentido[1] = -1;
   }
 
   return Corpo_1_sentido;
@@ -119,36 +125,65 @@ function calcula_sentido(Corpo_1, Corpo_2) {
 
 function calcula_distancia(Corpo_1, Corpo_2) {
 
-  // Distância entres os corpos
-  distancia = corpo_coordenadas(Corpo_1) - corpo_coordenadas(Corpo_2);
-  distancia = distancia ** 2;
+  let distancia;
 
+  let Corpo_1_coordenada = corpo_coordenadas(Corpo_1);
+  let Corpo_2_coordenada = corpo_coordenadas(Corpo_2);
+
+  // Verifica se em alguma dimensão são iguais
+  if (
+    Corpo_1_coordenada[0] == Corpo_2_coordenada[0] ||
+    Corpo_1_coordenada[1] == Corpo_2_coordenada[1]
+  ) {
+    
+    // Identificando em qual dimensão
+    if (Corpo_1_coordenada[0] != Corpo_2_coordenada[0]) {
+      distancia = Corpo_1_coordenada[0] - Corpo_2_coordenada[0]; // X
+    }
+    else {
+      distancia = Corpo_1_coordenada[1] - Corpo_2_coordenada[1]; // Y
+    }
+  
+  }
+  else { // Pitagoras
+    
+    let distancia_X = Corpo_1_coordenada[0] - Corpo_2_coordenada[0];
+    let distancia_Y = Corpo_1_coordenada[1] - Corpo_2_coordenada[1];
+    
+    distancia = Math.sqrt((distancia_X ** 2) + (distancia_Y ** 2)); // X, Y
+    
+  }
+  
   return distancia;
   
 }
 
-function corpo_movimento(Corpo, Corpo_X, sentido_X) {
+function corpo_movimento(Corpo, Corpo_coordenadas, sentido) {
 
   // Diferença do raio do corpo
-  let Corpo_raio = Corpo.offsetWidth / 2;
+  let Corpo_X_raio = Corpo.offsetWidth / 2;
+  let Corpo_Y_raio = Corpo.offsetHeight / 2;
   
   // Velocidade (Relatividade)
   let Corpo_velocidade = 1;
   
-  // Movimento dos corpos
-  Corpo.style.left = Corpo_X - Corpo_raio + (Corpo_velocidade * sentido_X);
+  // Movimento do corpo
+  Corpo.style.left = Corpo_coordenadas[0] - Corpo_X_raio + (Corpo_velocidade * sentido[0]); // X
+  Corpo.style.top = Corpo_coordenadas[1] - Corpo_Y_raio + (Corpo_velocidade * sentido[1]); // Y
   
 }
 
 function corpo_coordenadas(Corpo) {
   
   // Diferença do raio do corpo
-  let Corpo_raio = Corpo.offsetWidth / 2;
-
+  let Corpo_X_raio = Corpo.offsetWidth / 2;
+  let Corpo_Y_raio = Corpo.offsetHeight / 2;
+  
   // Coordenadas do corpo
-  let Corpo_X = Corpo.offsetLeft + Corpo_raio;
+  let Corpo_X = Corpo.offsetLeft + Corpo_X_raio;
+  let Corpo_Y = Corpo.offsetTop + Corpo_Y_raio;
 
-  return Corpo_X;
+  return [Corpo_X, Corpo_Y];
   
 }
 
